@@ -1,0 +1,89 @@
+package analizadores; 
+import java_cup.runtime.*;
+//import temp.*;
+
+parser code 
+{:
+    public temp codigo;
+    public void syntax_error(Symbol s){ 
+        System.out.println("Error Sintáctico en la Línea " + (s.left) +
+        " Columna "+s.right+ ". No se esperaba este componente: " +s.value+"."); 
+    } 
+
+    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{ 
+        System.out.println("Error síntactico irrecuperable en la Línea " + 
+        (s.left)+ " Columna "+s.right+". Componente " + s.value + 
+        " no reconocido."); 
+    }  
+:} 
+
+terminal String parizq,parder;
+terminal String mas,menos,dividido,por;
+terminal String numero;
+terminal String identificador;
+
+non terminal S;
+non terminal temp E,T,F;
+
+precedence left mas,menos;
+precedence left dividido,por;
+
+start with S; 
+
+S::=E:a {:System.out.println("El C3D es:"+a.C3D);:}
+;
+
+E::=E:a mas T:b {: temp nuevo=new temp();
+    nuevo.C3D=a.C3D+b.C3D
+    +nuevo.TMP+"="+a.TMP+"+"+b.TMP;
+    RESULT=nuevo;
+ :}
+|E:a menos T:b {: temp nuevo=new temp();
+    nuevo.C3D=a.C3D+b.C3D
+    +nuevo.TMP+"="+a.TMP+"-"+b.TMP;
+    RESULT=nuevo;
+ :}
+|T:b {: temp nuevo=new temp();
+    nuevo.TMP=b.TMP;
+    nuevo.C3D=b.C3D;
+    RESULT=nuevo;
+ :}
+;
+
+T::=T:a por F:b {: temp nuevo=new temp();
+    nuevo.C3D=a.C3D+b.C3D
+    +nuevo.TMP+"="+a.TMP+"*"+b.TMP;
+    RESULT=nuevo;
+ :}
+|T:a dividido F:b {: temp nuevo=new temp();
+    nuevo.C3D=a.C3D+b.C3D
+    +nuevo.TMP+"="+a.TMP+"/"+b.TMP;
+    RESULT=nuevo;
+ :}
+|F:b {: temp nuevo=new temp();
+    nuevo.TMP=b.TMP;
+    nuevo.C3D=b.C3D;
+    RESULT=nuevo;
+ :}
+;
+
+
+F::=parizq E:a parder {:temp nuevo=new temp();
+    nuevo.TMP=a.TMP;
+    nuevo.C3D=a.C3D;
+    RESULT=nuevo;
+    :}
+|   numero:a{:
+    temp nuevo=new temp();
+    nuevo.TMP=null;
+    nuevo.C3D=a;
+    RESULT=nuevo;
+    :}
+|   identificador:a{:
+    temp nuevo=new temp();
+    nuevo.TMP=null;
+    nuevo.C3D=a;
+    RESULT=nuevo;
+    :}
+;
+

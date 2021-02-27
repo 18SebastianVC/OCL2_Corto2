@@ -1,0 +1,44 @@
+package analizadores;
+import java_cup.runtime.Symbol; 
+
+%% 
+%class Lexico
+%public 
+%line 
+%char 
+%cup 
+%unicode
+%ignorecase
+
+%init{ 
+    yyline = 1; 
+    yychar = 1; 
+%init} 
+
+id=([A-ZÑa-zñ]["_"0-9A-ZÑa-zñ]*)|(["_"]+[0-9A-ZÑa-zñ]["_"0-9A-ZÑa-zñ]*)
+entero=[0-9]+
+BLANCOS=[ \r\t]+
+
+
+%%
+
+
+"(" {return new Symbol(sym.parizq,yyline,yychar, yytext());} 
+")" {return new Symbol(sym.parder,yyline,yychar, yytext());} 
+
+
+"+" {return new Symbol(sym.mas,yyline,yychar, yytext());} 
+"-" {return new Symbol(sym.menos,yyline,yychar, yytext());} 
+"*" {return new Symbol(sym.por,yyline,yychar, yytext());} 
+"/" {return new Symbol(sym.dividido,yyline,yychar, yytext());} 
+
+\n {yychar=1;}
+
+{BLANCOS} {} 
+{entero} {return new Symbol(sym.numero,yyline,yychar, yytext());} 
+{id} {return new Symbol(sym.identificador,yyline,yychar, yytext());} 
+
+. {
+    System.out.println("Este es un error lexico: "+yytext()+
+    ", en la linea: "+yyline+", en la columna: "+yychar);
+}
